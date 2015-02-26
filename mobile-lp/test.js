@@ -1,6 +1,6 @@
 exports.name = 'mobilelp_german_s5_cd';
 
-exports.startsAt = 'http://www.rosettastone.com/lp/mobile-lp/sitewide/';
+exports.startsAt = 'http://www.rosettastone.com/lp/mobile/sitewide/';
 
 exports.viewport = {width: 1280, height: 720};
 
