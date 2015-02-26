@@ -12,6 +12,7 @@ var testmodule = require('./mymod.js');
 var steps = testmodule.pageSteps;
 var startsat = testmodule.startsAt;
 var expects = testmodule.expects;
+var setviewport = testmodule.viewport;
 
 var stdres = {starturl: startsat};
 
@@ -89,7 +90,7 @@ function openpage() {
 }
 
 phantom.clearCookies();
-page.viewportSize = {width: 1280, height: 720};
+page.viewportSize = !!setviewport ? setviewport : {width: 1280, height: 720};
 openpage();
 
 // page.onUrlChanged = function(targetUrl) {

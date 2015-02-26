@@ -1,6 +1,6 @@
-exports.name = 'newlang_german_s5_cd';
+exports.name = 'sbs_german_s5_cd';
 
-exports.startsAt = 'http://www.stg.rosettastone.com/lp/newlang/sitewide/';
+exports.startsAt = 'http://www.stg.rosettastone.com/lp/sbs/sitewide/';
 
 exports.pageSteps = [function() {
 
