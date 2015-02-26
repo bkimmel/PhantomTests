@@ -6,9 +6,51 @@ var starttime = Date.now();
 var fs = require('fs');
 var system = require('system');
 
+function changewd(_args) {
+	var modpath = Array.prototype.slice.call(_args);
+	if( !fs.isDirectory(modpath.slice(-1)) ) {
+		console.error('Invalid Directory.  Usage: phantomjs visor.js *moduledirectory*');
+		phantom.exit();
+	}
+	fs.changeWorkingDirectory( modpath.slice(-1) );
+}
+//console.log( fs.workingDirectory ); //=> phantomdir
+changewd(phantom.args);
+
+function gettestmodule() {
+	if( !fs.exists('./test.js') ) {
+		console.error('Test fixture expects "test.js" in module directory.');
+		phantom.exit();
+	}
+	var absmod = fs.absolute( './test.js' );
+	var testmod = require( absmod );
+	if(!testmod) {
+		console.error('Test module must export from "test.js".');
+		phantom.exit();
+	}
+	if(!testmod.expects || typeof testmod.expects != 'function' ) {
+		console.error('Test module must export "expects" as a function.');
+		phantom.exit();
+	}
+	if(!testmod.startsAt || typeof testmod.startsAt != 'string') {
+		console.error('Test module must export "startsAt" as a url string.');
+		phantom.exit();
+	}
+	if( !Array.prototype.isPrototypeOf(testmod.pageSteps) ) {
+		console.error('Test module must export "pageSteps" as an array.');
+		phantom.exit();
+	}
+	if(testmod.pageSteps.filter(function(v){ return typeof v == 'function'; }).length != testmod.pageSteps.length) {
+		console.error('Every member of the pageSteps array must be a function.');
+		phantom.exit();
+	}
+	
+	return testmod;
+}
+
 
 //Read the test module:
-var testmodule = require('./mymod.js');
+var testmodule = gettestmodule();
 var steps = testmodule.pageSteps;
 var startsat = testmodule.startsAt;
 var expects = testmodule.expects;
@@ -32,24 +74,35 @@ function processurl(status) {
 		return done();
 	}
 	
-	var timo;
-	page.onUrlChanged = function(targetUrl) {
-	  console.log('NAV TO: ' + targetUrl);
-	  if(!!timo) {
-		clearTimeout(timo);
-		timo = null;
-	  }
-	  timo = setTimeout(function() {
-		console.log('NAV TIMER:');
-		nextstep();
-	  }, 5000);
-	};
+	// var timo;
+	
+	// page.onNavigationRequested = function(url, type, willNavigate, main) {
+		// console.log('Trying to navigate to: ' + url);
+		// console.log('Caused by: ' + type);
+		// console.log('Will actually navigate: ' + willNavigate);
+		// console.log("Sent from the page's main frame: " + main);
+		
+		// // if(!!timo) {
+			// // clearTimeout(timo);
+			// // timo = null;
+		// // }
+		// // timo = setTimeout(function() {
+			// // console.log('NAV TIMER:');
+			// // nextstep();
+		// // }, 10000);
+	// }
+	
+	// page.onUrlChanged = function(targetUrl) {
+	  // console.log('NAV TO: ' + targetUrl);
+	  
+	// };
 	
 	//console.log(typeof steps[0]);
-	page.evaluateAsync(steps[0]);
-	steps.shift();
-	
-	setTimeout(done, 30000);
+	setTimeout(function(){
+		page.evaluateAsync(steps[0]);
+		steps.shift();
+		setTimeout(done, 60000);
+	}, 0)
 }
 
 function nextstep() {
@@ -60,7 +113,7 @@ function nextstep() {
 		var res = page.evaluateAsync(nxt);
 	}
 	if (!!steps.length) {
-	  setTimeout(done, 10000);
+	  setTimeout(done, 5000);
 	}
 }
 
@@ -76,6 +129,13 @@ page.onCallback = function(data) {
 	}
 	if (typeof data == 'string' && data.match(/screenshot/gi) ) {
 		page.render(data + '.jpg');
+		return true;
+	}
+	if (typeof data == 'object' && data.navto) {
+		console.log('NAVTO:' + data.navto);
+		page.open(data.navto, function() {
+			setTimeout(nextstep, 10000);
+		});
 		return true;
 	}
 	if (typeof data == 'object') {
