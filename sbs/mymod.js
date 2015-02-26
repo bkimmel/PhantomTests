@@ -19,6 +19,7 @@ exports.pageSteps = [function() {
 }, function() {
 
 	function evalurl() {
+	  window.callPhantom('screenshot_cart');
 	  window.callPhantom({pathname: window.location.pathname});
 	  var cartprice = parseInt( jQuery('.cart-price:eq(0) p:eq(1)').html().match(/\d+/), 10);
 	  window.callPhantom({"cartprice": cartprice});
