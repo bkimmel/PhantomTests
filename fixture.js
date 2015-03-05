@@ -1,6 +1,6 @@
 //PhantomJS ver: 1.9+
 //http://phantomjs.org/download.html
-//Call With: phamtomjs --ssl-protocol=any fixture.js "C:\*moduledirectory*"
+//Call With: phantomjs --ssl-protocol=any fixture.js "C:\*moduledirectory*"
 //*Important: leaving out ssl-protocol=any will cause the phantom page not to navigate to https (the cart) 
 var page = require('webpage').create();
 var starttime = Date.now();
