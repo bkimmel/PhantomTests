@@ -1,0 +1,29 @@
+{
+  "name": "PhantomTests",
+  "version": "0.0.0",
+  "description": "Phantom Tests",
+  "main": "fixture.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bkimmel/PhantomTests.git"
+  },
+  "keywords": [
+    "Phantom",
+    "Testing",
+    "Node"
+  ],
+  "author": "Brent Kimmel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bkimmel/PhantomTests/issues"
+  },
+  "homepage": "https://github.com/bkimmel/PhantomTests",
+  "dependencies": {
+    "lodash": "^3.3.1",
+    "connect": "^3.3.4",
+    "async": "^0.9.0"
+  }
+}
