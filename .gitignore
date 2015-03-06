@@ -41,5 +41,8 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#Node
 node_modules
 mobile-lp
+phantomjs.exe

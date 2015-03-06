@@ -1,0 +1,17 @@
+[
+  {
+    "Has the right location (us_en_store_view/checkout/cart)": true
+  },
+  {
+    "Landing page price matches cart price": true
+  },
+  {
+    "Price": 299
+  },
+  {
+    "time": "1425652003496"
+  },
+  {
+    "date": "Fri Mar 06 2015 09:26:43 GMT-0500 (Eastern Standard Time)"
+  }
+]

@@ -8,6 +8,7 @@ var fs = require('fs');
 var system = require('system');
 
 function changewd(_args) {
+	//console.log(JSON.stringify(_args));
 	var modpath = Array.prototype.slice.call(_args);
 	if( !fs.isDirectory(modpath.slice(-1)) ) {
 		console.error('Invalid Directory.  Usage: phantomjs --options *thisfile*.js *moduledirectory*');
@@ -16,7 +17,7 @@ function changewd(_args) {
 	fs.changeWorkingDirectory( modpath.slice(-1) );
 }
 //console.log( fs.workingDirectory ); //=> phantomdir
-changewd(phantom.args);
+changewd(phantom.args || require('system').args);
 
 function gettestmodule() {
 	if( !fs.exists('./test.js') ) {
