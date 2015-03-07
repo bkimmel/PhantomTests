@@ -12,6 +12,7 @@ function changewd(_args) {
 	var modpath = Array.prototype.slice.call(_args);
 	if( !fs.isDirectory(modpath.slice(-1)) ) {
 		console.error('Invalid Directory.  Usage: phantomjs --options *thisfile*.js *moduledirectory*');
+		console.error('Directory Received: ' + modpath.slice(-1));
 		phantom.exit();
 	}
 	fs.changeWorkingDirectory( modpath.slice(-1) );
