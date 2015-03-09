@@ -1,7 +1,11 @@
-exports.name = 'sbs_german_s5_cd';
-
+var testvars = {
+	lang: "German",
+	level: /Level[s]*\s*[1-]*5/i,
+	delivery: /Download/i,
+	lp: "sbs"
+}
+exports.name = 'sbs_' + testvars.lang + '_s5_cd';
 exports.startsAt = 'http://www.rosettastone.com/lp/sbs/sitewide/';
-
 exports.pageSteps = [function() {
 
     jQuery('#deu').trigger('click');
@@ -12,7 +16,7 @@ exports.pageSteps = [function() {
 		//window.callPhantom('screenshot_precart');
 		var navto = jQuery('.lineitem.DOWNLOAD_S5').parents('.pricing').find('.basketbutton').attr('href');
 		window.callPhantom({"carturl": navto});
-		window.callPhantom({"navto": navto});
+		window.location = navto;
 	}, 2000);
 	
 }, function() {
@@ -21,6 +25,8 @@ exports.pageSteps = [function() {
 	  window.callPhantom({pathname: window.location.pathname});
 	  var cartprice = parseInt( jQuery('.cart-price:eq(0) p:eq(1)').html().match(/\d+/), 10);
 	  window.callPhantom({"cartprice": cartprice});
+	  window.callPhantom({"prodname": jQuery('p.prodname').text()});
+	  window.callPhantom({"delivery": jQuery('p.prodname').text()});
 	  window.callPhantom({"endurl": window.location.href});
 	  window.callPhantom('done');
 	}
@@ -34,6 +40,15 @@ exports.expects = function(results) {
 	});
 	res.push({
 		'Landing page price matches cart price': !!(results.lpprice === results.cartprice)
+	});
+	res.push({
+		'Cart shows correct language': !!results.prodname.match(new RegExp(testvars.lang,"i"))
+	});
+	res.push({
+		'Cart shows correct level': !!results.prodname.match(testvars.level)
+	});
+	res.push({
+		'Cart shows correct delivery': !!results.prodname.match(testvars.delivery)
 	});
 	res.push({
 		'Price': results.cartprice

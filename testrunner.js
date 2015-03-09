@@ -15,11 +15,21 @@ var opts = ['--ssl-protocol=any', 'fixture.js'];
 var testprocess = spawn.bind(this, 'phantomjs');
 
 function testrun(cb) {
-	var t = setTimeout(function() {
-		console.log('TIMEOUT: TEST RUNNER ABORTING TEST');
-		testing.kill();
-		cb();
-	}, 30000);
+	function crossPlatformKill(cp, cb) {
+		var isWin = /^win/.test(process.platform);
+		if(isWin) {
+			var pid = cp.pid;
+			var cp = require('child_process');
+			cp.exec('taskkill /PID ' + pid + ' /T /F', function (error, stdout, stderr) {
+				cb();
+			});            
+		}
+		else {
+			cp.kill('SIGINT');
+			cb();
+		}
+	}
+	
 	var pth = this.pth;
 	console.log('TEST RUNNER STARTING TEST: ' + pth);
 	var testing = testprocess(opts.slice(0).concat(pth));
@@ -29,8 +39,12 @@ function testrun(cb) {
 	testing.on('exit', function(code){
 		console.log('PHANTOM EXITS');
 		clearTimeout(t);
-		cb(null, 'done')
+		crossPlatformKill(testing, cb);
 	});
+	var t = setTimeout(function() {
+		console.log('TIMEOUT: TEST RUNNER ABORTING TEST');
+		crossPlatformKill(testing, cb);
+	}, 30000);
 }
 
 function runtests(argpath) {	
@@ -62,8 +76,8 @@ function runtests(argpath) {
 	});
 	
 	async.series(asynctests, function(res){
-		//re-run every five minutes
-		setTimeout(function(){ console.log('TEST LOOP COMPLETE...RESTARTING...'); runtests(argpath); }, 60000 * 5);
+		//re-run minutes
+		setTimeout(function(){ console.log('TEST LOOP COMPLETE...RESTARTING...'); runtests(argpath); }, 60000 * 1);
 	});
 	
 }

@@ -65,11 +65,16 @@ function done() {
 	console.log('DONE:');
 	system.stdout.write(JSON.stringify(stdres));
 	console.log('EXPECTS:');
+	try {
+		var results = expects(stdres);
+		results.push( {time: Date.now().toString()} );
+		results.push( {date: (new Date()).toString() } );
+		console.log( JSON.stringify(results, null, 2) );
+	}
+	catch(e) {
+		results = [{"tests passed": false}, {"error:": e.toString()}];
+	}
 	
-	var results = expects(stdres);
-	results.push( {time: Date.now().toString()} );
-	results.push( {date: (new Date()).toString() } );
-	console.log( JSON.stringify(results, null, 2) );
 	fs.write('result.json', JSON.stringify(results, null, 2), 'w');
 	//system.stdout.write(JSON.stringify(expects(stdres)));
     phantom.exit();
@@ -89,31 +94,19 @@ function processurl(status) {
 		console.log('Caused by: ' + type);
 		console.log('Will actually navigate: ' + willNavigate);
 		console.log("Sent from the page's main frame: " + main);
-		
-		if(!!main) {
-			if(!!timo) {
-				clearTimeout(timo);
-				timo = null;
-			}
-			timo = setTimeout(function() {
-				console.log('NAV TIMER:');
-				nextstep();
-			}, 10000);
-		}
 	};
 	
-	// page.onUrlChanged = function(targetUrl) {
-	  // console.log('NAV TO: ' + targetUrl);
-	  // // if(!!timo) {
-			// // clearTimeout(timo);
-			// // timo = null;
-		// // }
-		// // timo = setTimeout(function() {
-			// // console.log('NAV TIMER:');
-			// // nextstep();
-		// // }, 10000);
-	  
-	// };
+	page.onUrlChanged = function(targetUrl) {
+	  console.log('URL CHANGE TO: ' + targetUrl);
+	  if(!!timo) {
+			clearTimeout(timo);
+			timo = null;
+		}
+		timo = setTimeout(function() {
+			console.log('NAV TIMER:');
+			nextstep();
+		}, 10000);
+	};
 	
 	//console.log(typeof steps[0]);
 	setTimeout(function(){

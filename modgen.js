@@ -14,7 +14,9 @@ var argpath = ( (args.length > 3) && args.pop() ) || process.cwd();
 //argpath: the directory we want to process
 
 var pagespath = args.pop();
-//console.log(pagespath);
+
+console.log('PAGESPATH: ' + pagespath);
+console.log('STARTPATH: ' + argpath);
 
 //traverse directory & find template.txt => *templates
 var templates = (function gettemplates(pth) {
