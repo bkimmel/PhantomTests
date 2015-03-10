@@ -1,6 +1,5 @@
-//get test.js files => *tests
-//for *tests => *testfile
-	//run fixture(*testfile)
+//Test Runner
+//Usage: node *this* *directory_to_process*
 	
 var _ = require('lodash');
 var fs = require('fs');
@@ -15,6 +14,7 @@ var opts = ['--ssl-protocol=any', 'fixture.js'];
 var testprocess = spawn.bind(this, 'phantomjs');
 
 function testrun(cb) {
+	var pth = this.pth;
 	function crossPlatformKill(cp, cb) {
 		var isWin = /^win/.test(process.platform);
 		if(isWin) {
@@ -30,7 +30,6 @@ function testrun(cb) {
 		}
 	}
 	
-	var pth = this.pth;
 	console.log('TEST RUNNER STARTING TEST: ' + pth);
 	var testing = testprocess(opts.slice(0).concat(pth));
 	testing.stdout.on('data', function(d){
@@ -41,10 +40,16 @@ function testrun(cb) {
 		clearTimeout(t);
 		crossPlatformKill(testing, cb);
 	});
+	testing.on('error', function(err){
+		console.log('PHANTOM ERROR: ' + err);
+		clearTimeout(t);
+		crossPlatformKill(testing, cb);
+	});
+	//Give the Phantom test 60 seconds to run
 	var t = setTimeout(function() {
 		console.log('TIMEOUT: TEST RUNNER ABORTING TEST');
 		crossPlatformKill(testing, cb);
-	}, 30000);
+	}, 60000);
 }
 
 function runtests(argpath) {	
